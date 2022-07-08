@@ -48,8 +48,8 @@ function App() {
 
   return (
       <div className="app bg-gray-200">
-        <div className={"app__container bg-gray-50 drop-shadow-md rounded"}>
-          <h1 className={'text-2xl'}>Example Form Wizard</h1>
+        <div className={"app__container bg-gray-50 drop-shadow-md rounded w-full md:w-1/2 lg:w-1/3"}>
+          <h1 className={'text-2xl text-center'}>Example Form Wizard</h1>
           <form>
             {userProgressState && (userProgressState.activePage == 1) &&
               <Page pageNum={1}>
