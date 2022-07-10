@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {ChangeEvent, useEffect, useState} from 'react';
 import { Page } from './components/Page';
 import {Pagination} from "./components/Pagination";
 import {useDispatch, useSelector} from "react-redux";
@@ -10,8 +10,9 @@ import {SelectElement} from "./components/SelectElement";
 import {RadioInputElement} from "./components/RadioInputElement";
 import NumericOnlyValidator from "./components/validators/NumericOnlyValidator";
 import MaxLengthValidator from "./components/validators/MaxLengthValidator";
-import { clearData, removeDataByKey } from './redux/features/UserProgress/userProgressSlice';
+import { clearData, removeDataByKey, saveData } from './redux/features/UserProgress/userProgressSlice';
 import { hasSubmitted } from './redux/features/App/appSlice';
+import {SelectChangeEvent} from "@mui/material";
 
 function App() {
   const appState = useSelector((state: AppState)=>state.app);
@@ -46,6 +47,22 @@ function App() {
     }
   }
 
+  const multiSelectOnChange = (event: SelectChangeEvent) =>
+  {
+    let lastAddedItem = event.target.value[event.target.value.length-1];
+
+    if(lastAddedItem == 'none_of_the_above')
+    {
+      dispatch(saveData({key: 'hobbies', value: [lastAddedItem]}));
+    }
+    else if(event.target.value[0] == 'none_of_the_above')
+    {
+      let value: any = [...event.target.value as unknown as string[]];
+      value.shift();
+      dispatch(saveData({key: 'hobbies', value: value}));
+    }
+  }
+
   return (
       <div className="app bg-gray-200">
         <div className={"app__container bg-gray-50 drop-shadow-md rounded w-full md:w-1/2 lg:w-1/3"}>
@@ -60,7 +77,7 @@ function App() {
             {userProgressState && (userProgressState.activePage == 2) &&
               <Page pageNum={2}>
                 <SelectElement validators={[new RequiredValidator]} label={'Do you have Children?'} options={[{value: 'yes'}, {value: 'no'}]} name={'has_children'} placeholder={'Please select an option'} value={getData('has_children') || ''}/>
-                <SelectElement validators={[new RequiredValidator]} label={'Do you enjoy any of the following hobbies?'}  options={[{value: 'hiking'}, {value:'music'}, {value: 'programming'}, {value: 'none_of_the_above', displayValue:'None of the above'}]} name={'hobbies'} placeholder={'Please select an option'} value={getData('hobbies') || ''}/>
+                <SelectElement onChange={multiSelectOnChange} multiple={true} validators={[new RequiredValidator]} label={'Do you enjoy any of the following hobbies?'}  options={[{value: 'hiking'}, {value:'music'}, {value: 'programming'}, {value: 'none_of_the_above', displayValue:'None of the above'}]} name={'hobbies'} placeholder={'Please select an option'} value={getData('hobbies') || []}/>
               </Page>
             }
             {userProgressState && (userProgressState.activePage == 3) &&

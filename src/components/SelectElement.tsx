@@ -1,12 +1,11 @@
 import {convertToKebabCase, ucwords} from "../utils/string-utils";
-import React, {ChangeEvent, useEffect} from "react";
-import {InputElement, InputElementProps} from "./InputElement";
+import React, {useEffect} from "react";
+import {InputElementProps} from "./InputElement";
 import {saveData} from "../redux/features/UserProgress/userProgressSlice";
-import validate = WebAssembly.validate;
 import {useDispatch} from "react-redux";
 import {FormControl, InputLabel, MenuItem, Select, SelectChangeEvent} from "@mui/material";
 
-type SelectElementProps = {options: {value: string, displayValue?: string}[] } & Omit<InputElementProps, 'type'>
+type SelectElementProps = {onChange?: (event: SelectChangeEvent)=>void, multiple?: boolean, options: {value: string, displayValue?: string}[] } & Omit<InputElementProps, 'type' | 'onChange'>
 
 export const SelectElement = (props: SelectElementProps) => {
   {
@@ -59,21 +58,20 @@ export const SelectElement = (props: SelectElementProps) => {
         <InputLabel id="demo-simple-select-label">{props.label}</InputLabel>
         <Select
             {...mainProps}
-            onChange={onChange}
+            onChange={(event: SelectChangeEvent)=>{
+              onChange(event);
+
+              if(props.onChange)
+              {
+                props.onChange(event);
+              }
+            }}
         >
           {props.options.map((option, key)=>{
             return <MenuItem key={key} value={option.value}>{option.displayValue ? option.displayValue : ucwords(option.value)}</MenuItem>
           })}
         </Select>
       </FormControl>
-
-      {/*{props.label && <label htmlFor={id}>{props.label}</label>}*/}
-      {/*<select {...mainProps} onChange={onChange}>*/}
-      {/*  {props.placeholder && <option value={''}>{props.placeholder}</option>}*/}
-      {/*  {props.options.map((option, key) => {*/}
-      {/*    return <option key={key} value={option.value}>{option.displayValue ? option.displayValue : ucwords(option.value)}</option>*/}
-      {/*  })}*/}
-      {/*</select>*/}
     </>
   }
 }
